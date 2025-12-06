@@ -12,12 +12,12 @@ Holiday Keeper는 Nager.Date 외부 API를 활용하여 최근 5년(2020~2025)�
 - Holiday 데이터는 변경이 거의 없으므로 Read-Optimized 구조로 설계했습니다.
 <br><br>
 3. 전체 구조 (Layered Architecture)
-com.planitsquare.holidaykeeper
- ├── api        - 외부 Nager API 호출(Client, DTO, Config)
- ├── country    - Country 도메인(Entity/Repo/Service/Controller)
- ├── holiday    - Holiday 도메인(Entity/Repo/Service/Controller)
- ├── common     - 공통 예외, 유틸, 공용 설정
- └── scheduler  - 데이터 Refresh 스케줄러(Optional)
+<br> com.planitsquare.holidaykeeper
+<br>  ├── api        - 외부 Nager API 호출(Client, DTO, Config)
+ <br>├── country    - Country 도메인(Entity/Repo/Service/Controller)
+<br> ├── holiday    - Holiday 도메인(Entity/Repo/Service/Controller)
+ <br>├── common     - 공통 예외, 유틸, 공용 설정
+<br> └── scheduler  - 데이터 Refresh 스케줄러(Optional)
 <br><br>
 4. 핵심 기능 요약
 - AvailableCountries API → 국가 목록 DB 저장
