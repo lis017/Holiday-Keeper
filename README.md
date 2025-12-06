@@ -26,7 +26,7 @@ com.planitsquare.holidaykeeper
 - 데이터 Refresh (재적재), 삭제
 - OpenAPI 문서 제공
 <br><br>
-- 5. 데이터 적재 로직 개요
+5. 데이터 적재 로직 개요
 1) 국가 목록 호출 → Country 테이블 저장
 2) 각 국가별 2020~2025 공휴일 반복 수집 → Holiday 테이블 저장
 3) 인덱스를 활용해 빠른 조회 보장
