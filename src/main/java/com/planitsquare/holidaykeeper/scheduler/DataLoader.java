@@ -47,7 +47,7 @@ public class DataLoader implements CommandLineRunner {
                     .build());
         }
         countryService.saveAll(countries);
-
+        log.info("외부 API 기반 Country 데이터 적재 완료: {}개", countries.size());
     }
 
     /** 2020~2025 공휴일 데이터 외부 API에서 적재 */
@@ -77,6 +77,6 @@ public class DataLoader implements CommandLineRunner {
         }
 
         holidayService.saveAll(holidays);
-
+        log.info("외부 API 기반 Holiday 데이터 적재 완료: {}개", holidays.size());
     }
 }
