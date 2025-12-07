@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+/** 국가별 정보 관리, 참조및 검색 */
 public class Country {
 
     @Id

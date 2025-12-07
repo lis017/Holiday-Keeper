@@ -15,5 +15,5 @@ public record PublicHolidayDto(
         boolean global,
         List<String> counties,
         Integer launchYear,
-        List<String> types   // ← 여기! String → List<String> 으로 수정
+        List<String> types
 ) {}
