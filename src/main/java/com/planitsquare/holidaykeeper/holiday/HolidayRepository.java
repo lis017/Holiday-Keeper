@@ -6,5 +6,5 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface HolidayRepository extends JpaRepository<Holiday, Long> {
-    List<Holiday> findByCountryIdAndYear(Long countryId, int year);
+    List<Holiday> findByCountryCode_IdAndYear(Long countryId, int year);
 }

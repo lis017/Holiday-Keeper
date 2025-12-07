@@ -37,7 +37,7 @@ public class Holiday {
     private List<String> types;
 
 
-
+    @Column(name = "holiday_year")
     private int year;
     @PrePersist
     public void prePersist()

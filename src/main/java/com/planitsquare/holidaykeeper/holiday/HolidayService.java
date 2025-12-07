@@ -18,6 +18,6 @@ public class HolidayService {
     }
 
     public List<Holiday> findByCountryIdAndYear(Long countryId, int year) {
-        return holidayRepository.findByCountryIdAndYear(countryId, year);
+        return holidayRepository.findByCountryCode_IdAndYear(countryId, year);
     }
 }
