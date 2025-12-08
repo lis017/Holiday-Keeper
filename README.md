@@ -39,5 +39,5 @@ Holiday(id, countryCode, date, localName, name, year, global)
 - (countryCode, year) 복합 인덱스: 국가+연도 기반 조회 최적화
 
 ---------------------------------------
-(업데이트 후보)
+(업데이트 후보) <br>
 toDto mapper로 refactor
