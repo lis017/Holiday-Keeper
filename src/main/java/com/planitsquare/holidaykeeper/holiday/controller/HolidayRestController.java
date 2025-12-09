@@ -1,6 +1,7 @@
-package com.planitsquare.holidaykeeper.holiday;
+package com.planitsquare.holidaykeeper.holiday.controller;
 
 import com.planitsquare.holidaykeeper.api.dto.PublicHolidayDto;
+import com.planitsquare.holidaykeeper.holiday.service.HolidayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;

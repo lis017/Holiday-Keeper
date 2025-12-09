@@ -1,5 +1,6 @@
-package com.planitsquare.holidaykeeper.holiday;
+package com.planitsquare.holidaykeeper.holiday.repository;
 
+import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

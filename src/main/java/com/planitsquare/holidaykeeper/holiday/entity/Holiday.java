@@ -1,4 +1,4 @@
-package com.planitsquare.holidaykeeper.holiday;
+package com.planitsquare.holidaykeeper.holiday.entity;
 
 import com.planitsquare.holidaykeeper.country.Country;
 import jakarta.persistence.*;
