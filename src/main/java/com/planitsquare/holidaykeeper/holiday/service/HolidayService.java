@@ -10,27 +10,32 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/*
+    필터검색시 db내용 바로 응답
+ */
 @Service
 @RequiredArgsConstructor
 public class HolidayService {
 
     private final HolidayRepository holidayRepository;
+    private final HolidaySyncService holidaySyncService;
 
-    /** DB에 Holiday 저장 */
+    public Page<PublicHolidayDto> search(Integer year, String countryCode, Pageable pageable) {
+
+        // 1. DB에서 먼저 조회 → 클라이언트 즉시 응답
+        Page<PublicHolidayDto> page = holidayRepository.search(year, countryCode, pageable)
+                .map(this::toDto);
+
+        // 2. 백그라운드 비동기 재동기화 호출
+        holidaySyncService.reSync(year, countryCode);
+
+        return page;
+    }
+
     public void saveAll(List<Holiday> holidays) {
         holidayRepository.saveAll(holidays);
     }
 
-    /**
-     * Holiday 엔티티 검색 서비스.
-     */
-    public Page<PublicHolidayDto> search(Integer year, String countryCode, Pageable pageable) {
-        return holidayRepository.search(year, countryCode, pageable)
-                .map(this::toDto);
-    }
-    /** * Holiday 엔티티 → PublicHolidayDto 로 변환하는 Mapper 메서드.
-     *  * 엔티티 전체를 API 응답으로 직접 노출하지 않고,
-     *  * 외부 API DTO를 재사용해 중복을 줄이고 계층 분리를 강화한 설계입니다 */
     private PublicHolidayDto toDto(Holiday h) {
         return new PublicHolidayDto(
                 h.getDate().toString(),

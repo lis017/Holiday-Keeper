@@ -44,4 +44,20 @@ public class Holiday {
     {
         this.year = this.date.getYear();
     }
+
+    @Builder
+    public Holiday(Long id, LocalDate date, String localName, String name, Country countryCode,
+                   boolean fixed, boolean global, List<String> counties,
+                   Integer launchYear, List<String> types) {
+        this.id = id;
+        this.date = date;
+        this.localName = localName;
+        this.name = name;
+        this.countryCode = countryCode;
+        this.fixed = fixed;
+        this.global = global;
+        this.counties = counties;
+        this.launchYear = launchYear;
+        this.types = types;
+    }
 }
