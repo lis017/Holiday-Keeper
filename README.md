@@ -37,3 +37,7 @@ Holiday(id, countryCode, date, localName, name, year, global)
 
 - 연도(year) 컬럼 분리: 조회 속도 향상
 - (countryCode, year) 복합 인덱스: 국가+연도 기반 조회 최적화
+
+---------------------------------------
+## 개선(Refactoring) 아이디어 <br>
+toDto mapper로 refactor
