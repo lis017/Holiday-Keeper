@@ -62,4 +62,18 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
+
+    @Override
+    public List<Holiday> findByYearAndCountryCode(Integer year, String countryCode) {
+        QHoliday h = QHoliday.holiday;
+
+        return queryFactory
+                .selectFrom(h)
+                .where(
+                        (year != null) ? h.year.eq(year) : null,
+                        (countryCode != null) ? h.countryCode.countryCode.eq(countryCode) : null
+                )
+                .fetch();
+    }
+
 }
