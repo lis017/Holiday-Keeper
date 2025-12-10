@@ -12,6 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(
+        indexes = {
+                @Index(name = "idx_year_country", columnList = "holiday_year,country_id")
+        }
+)
 /** 공휴일 데이터 저장 */
 public class Holiday {
 
