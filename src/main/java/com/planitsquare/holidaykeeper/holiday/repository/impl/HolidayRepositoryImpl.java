@@ -1,7 +1,7 @@
 package com.planitsquare.holidaykeeper.holiday.repository.impl;
 
-import com.planitsquare.holidaykeeper.holiday.QHoliday;
 import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
+import com.planitsquare.holidaykeeper.holiday.entity.QHoliday;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepositoryCustom;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -74,6 +74,22 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
                         (countryCode != null) ? h.countryCode.countryCode.eq(countryCode) : null
                 )
                 .fetch();
+    }
+    @Override
+    public void deleteByYearAndCountryCode(Integer year, String countryCode) {
+        QHoliday h = QHoliday.holiday;
+
+        // 삭제할 Holiday ID만 가져오기
+        List<Long> idsToDelete = queryFactory
+                .select(h.id)
+                .from(h)
+                .where(
+                        (year != null) ? h.year.eq(year) : null,
+                        (countryCode != null) ? h.countryCode.countryCode.eq(countryCode) : null
+                )
+                .fetch();
+
+       
     }
 
 }

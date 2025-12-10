@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
 @RequestMapping("/v1/holiday")
@@ -29,4 +30,16 @@ public class HolidayRestController {
     ) {
         return holidayService.search(year, countryCode, pageable);
     }
+
+
+    @Operation(summary = "연도별 국가별 공휴일 삭제",
+            description = "연도와 국가 코드를 기반으로 해당 공휴일 레코드를 모두 삭제합니다.")
+    @DeleteMapping
+    public void deleteHolidays(
+            @Parameter(description = "삭제할 연도") @RequestParam Integer year,
+            @Parameter(description = "삭제할 국가 코드") @RequestParam String countryCode
+    ) {
+        holidayService.deleteByYearAndCountryCode(year, countryCode);
+    }
+
 }

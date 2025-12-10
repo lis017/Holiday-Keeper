@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -30,6 +31,11 @@ public class HolidayService {
         holidaySyncService.reSync(year, countryCode);
 
         return page;
+    }
+    /** 특정 연도·국가 공휴일 전체 삭제 */
+    @Transactional
+    public void deleteByYearAndCountryCode(Integer year, String countryCode) {
+        holidayRepository.deleteByYearAndCountryCode(year, countryCode);
     }
 
     public void saveAll(List<Holiday> holidays) {
