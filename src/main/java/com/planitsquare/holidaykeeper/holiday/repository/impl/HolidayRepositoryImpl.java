@@ -89,7 +89,12 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
                 )
                 .fetch();
 
-       
+        if (!idsToDelete.isEmpty()) {
+            // ID 기준으로 삭제
+            queryFactory.delete(h)
+                    .where(h.id.in(idsToDelete))
+                    .execute();
+        }
     }
 
 }
