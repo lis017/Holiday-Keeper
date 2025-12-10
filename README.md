@@ -43,3 +43,139 @@ Holiday(id, countryCode, date, localName, name, year, global)
 ---------------------------------------
 ## 개선(Refactoring) 아이디어 <br>
 toDto mapper로 refactor
+---------------------------------------
+#빌드 & 실행 방법 <br>
+1. 클론 후 ./gradlew bootRun
+2. http://localhost:8080/swagger-ui/index.html 접속후 get(조회) delete(삭제)선택후
+   year, countryCode, size, page등 입력하여 기능
+
+
+
+
+
+#설계한 REST API 명세 요약** (엔드포인트·파라미터·응답 예시)
+📌 1. 공휴일 조회 API
+GET /v1/holiday
+✔ 기능
+
+특정 **연도(year)**와 국가 코드(countryCode) 기준으로 공휴일 목록을 조회합니다.
+QueryDSL 기반 동적 검색을 적용했고, 페이징·정렬을 지원합니다.
+
+✔ 요청 파라미터
+🔸 Query Params
+이름	타입	필수	설명
+year	Integer	N	조회할 연도(예: 2024)
+countryCode	String	N	ISO 국가 코드 (예: KR, US)
+page	Integer	N	페이지 번호
+size	Integer	N	페이지 크기
+sort	String	N	정렬 기준(name, year, countryCode 가능)
+✔ 응답 예시 (200 OK)
+{
+  "content": [
+    {
+      "date": "2024-01-01",
+      "localName": "새해",
+      "name": "New Year's Day",
+      "countryCode": "KR",
+      "fixed": true,
+      "global": true,
+      "counties": null,
+      "launchYear": 1949,
+      "types": ["Public"]
+    }
+  ],
+  "pageable": {
+    "pageNumber": 0,
+    "pageSize": 20
+  },
+  "totalElements": 15,
+  "totalPages": 1
+}
+
+✔ 동작 방식 요약
+
+year, countryCode가 null이면 조건에서 제외 (QueryDSL dynamic search)
+
+인덱스: holiday_year, country_id ⇢ 연도 + 국가 조건 검색 최적화
+
+정렬 가능 필드: name, year, countryCode
+
+DTO 매핑 후 Page 형태로 반환
+
+📌 2. 공휴일 삭제 API
+DELETE /v1/holiday
+✔ 기능
+
+연도 + 국가 코드를 만족하는 Holiday 레코드를 일괄 삭제합니다.
+
+✔ 요청 파라미터
+이름	타입	필수	설명
+year	Integer	Y	삭제할 연도
+countryCode	String	Y	삭제할 국가 코드
+✔ 응답
+
+204 No Content
+
+✔ 동작 방식
+
+year + countryCode 조건으로 Holiday ID 리스트 조회
+
+조회된 ID 목록 기반으로 batch delete 수행
+
+내부 구현: QueryDSL delete(h).where(h.id.in(ids))
+
+📌 3. 데이터 모델 구조 요약
+✔ Country
+@Id Long id  
+String countryCode   // ISO 국가 코드  
+String name
+
+✔ Holiday
+
+핵심 검색 필드
+
+holiday_year (int) → 인덱스
+
+country_id → Country FK
+
+@Table(indexes = {
+    @Index(name="idx_year_country", columnList="holiday_year,country_id")
+})
+
+
+즉, “연도 + 국가코드(countryCode)” 조회가 최적화됨
+자주 쓰는 업무 패턴(특정 연도 + 특정 국가의 공휴일 조회)를 정확히 커버.
+
+📌 4. Repository 동작 요약
+✔ search()
+
+QueryDSL 기반 동적 검색
+
+pageable + sort 적용
+
+total count 별도 쿼리
+
+✔ findByYearAndCountryCode()
+
+외부 API 데이터 upsert 로직에서 활용 가능
+
+✔ deleteByYearAndCountryCode()
+
+N+1 없이 ID 기반 batch delete 수행
+
+
+
+
+
+#Swagger UI 또는 OpenAPI JSON 노출 확인 방법
+1. Swagger UI 확인
+서버 실행 후 아래 URL로 접속하세요:
+http://localhost:8080/swagger-ui/index.html
+
+2. OpenAPI JSON 확인
+Swagger 없이 문서 JSON만 보고 싶다면:
+http://localhost:8080/v3/api-docs
+
+3. OpenAPI YAML 확인
+YAML 형태 문서:
+http://localhost:8080/v3/api-docs.yaml
