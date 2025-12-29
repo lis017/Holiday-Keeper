@@ -4,6 +4,7 @@ import com.planitsquare.holidaykeeper.api.dto.PublicHolidayDto;
 import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,12 @@ public class HolidayService {
     private final HolidayRepository holidayRepository;
     private final HolidaySyncService holidaySyncService;
 
+    @Cacheable(
+            cacheNames = "holiday",
+            key = "'holiday:' + #year + ':' + #countryCode + ':' + " +
+                    "#pageable.pageNumber + ':' + #pageable.pageSize + ':' + " +
+                    "#pageable.sort.toString()"
+    )
     public Page<PublicHolidayDto> search(Integer year, String countryCode, Pageable pageable) {
 
         // 1. DB에서 먼저 조회 → 클라이언트 즉시 응답

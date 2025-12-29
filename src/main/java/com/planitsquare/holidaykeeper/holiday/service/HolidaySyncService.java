@@ -7,6 +7,7 @@ import com.planitsquare.holidaykeeper.country.CountryRepository;
 import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,10 @@ public class HolidaySyncService {
     private final CountryRepository countryRepository;
 
     @Async
+    @CacheEvict(        //upsert시, cache데이터 삭제(데이터신선도)
+            cacheNames = "holidaySearch",
+            allEntries = true
+    )
     public void reSync(Integer year, String countryCode) {
         // 1. 외부 API에서 최신 데이터 조회
         List<PublicHolidayDto> latestHolidays = nagerApiClient.getPublicHolidays(year, countryCode);
