@@ -42,6 +42,7 @@ Holiday(id, countryCode, date, localName, name, year, global)
 
 ---------------------------------------
 ## 개선(Refactoring) 아이디어 <br>
+reSync 중복 호출 방지 (Debounce)
 toDto mapper로 refactor
 ---------------------------------------
 #빌드 & 실행 방법 <br>
