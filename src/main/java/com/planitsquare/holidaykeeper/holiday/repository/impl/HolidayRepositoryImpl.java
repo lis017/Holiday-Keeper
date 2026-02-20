@@ -2,6 +2,7 @@ package com.planitsquare.holidaykeeper.holiday.repository.impl;
 
 import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import com.planitsquare.holidaykeeper.holiday.entity.QHoliday;
+import com.planitsquare.holidaykeeper.holiday.mapper.HolidayMapper;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepositoryCustom;
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -17,6 +18,7 @@ import java.util.List;
 public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final HolidayMapper holidayMapper;
 
     @Override
     public Page<Holiday> search(Integer year, String countryCode, Pageable pageable) {
@@ -62,39 +64,27 @@ public class HolidayRepositoryImpl implements HolidayRepositoryCustom {
 
         return new PageImpl<>(content, pageable, total);
     }
-
+    //upsert 전용조회(N+1 문제와 LazyInitialization 문제 해결을 위함)
     @Override
-    public List<Holiday> findByYearAndCountryCode(Integer year, String countryCode) {
+    public List<Holiday> findAllWithCountry(Integer year, String countryCode) {
         QHoliday h = QHoliday.holiday;
 
         return queryFactory
                 .selectFrom(h)
+                .join(h.countryCode).fetchJoin()
                 .where(
-                        (year != null) ? h.year.eq(year) : null,
-                        (countryCode != null) ? h.countryCode.countryCode.eq(countryCode) : null
+                        year != null ? h.year.eq(year) : null,
+                        countryCode != null ? h.countryCode.countryCode.eq(countryCode) : null
                 )
                 .fetch();
+    }
+
+    @Override
+    public List<Holiday> findByYearAndCountryCode(Integer year, String countryCode) {
+        return holidayMapper.findByYearAndCountryCode(year, countryCode);
     }
     @Override
     public void deleteByYearAndCountryCode(Integer year, String countryCode) {
-        QHoliday h = QHoliday.holiday;
-
-        // 삭제할 Holiday ID만 가져오기
-        List<Long> idsToDelete = queryFactory
-                .select(h.id)
-                .from(h)
-                .where(
-                        (year != null) ? h.year.eq(year) : null,
-                        (countryCode != null) ? h.countryCode.countryCode.eq(countryCode) : null
-                )
-                .fetch();
-
-        if (!idsToDelete.isEmpty()) {
-            // ID 기준으로 삭제
-            queryFactory.delete(h)
-                    .where(h.id.in(idsToDelete))
-                    .execute();
-        }
+        holidayMapper.deleteByYearAndCountryCode(year, countryCode);
     }
-
 }

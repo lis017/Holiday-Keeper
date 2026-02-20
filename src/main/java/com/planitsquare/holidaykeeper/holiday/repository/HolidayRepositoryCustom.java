@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface HolidayRepositoryCustom {
     Page<Holiday> search(Integer year, String countryCode, Pageable pageable);
+    List<Holiday> findAllWithCountry(Integer year, String countryCode);
     List<Holiday> findByYearAndCountryCode(Integer year, String countryCode);
     void deleteByYearAndCountryCode(Integer year, String countryCode);
 }

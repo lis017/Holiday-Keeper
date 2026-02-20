@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface HolidayRepository extends JpaRepository<Holiday, Long>, HolidayRepositoryCustom {
     List<Holiday> findByYearAndCountryCode(Integer year, String countryCode);
+    long countByYearAndCountryCode_CountryCode(Integer year, String countryCode);
 }

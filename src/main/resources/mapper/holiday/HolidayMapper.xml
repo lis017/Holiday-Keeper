@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.planitsquare.holidaykeeper.holiday.mapper.HolidayMapper">
+
+    <!-- 조회 -->
+    <select id="findByYearAndCountryCode"
+            resultType="com.planitsquare.holidaykeeper.holiday.entity.Holiday">
+        SELECT
+            id,
+            holiday_date,
+            name,
+            local_name,
+            year,
+            country_code,
+            fixed,
+            global,
+            counties,
+            launch_year,
+            types
+        FROM holiday
+        <where>
+            <if test="year != null">
+                AND year = #{year}
+            </if>
+            <if test="countryCode != null">
+                AND country_code = #{countryCode}
+            </if>
+        </where>
+    </select>
+
+    <!-- 삭제 -->
+    <delete id="deleteByYearAndCountryCode">
+        DELETE
+        FROM holiday
+        <where>
+            <if test="year != null">
+                AND year = #{year}
+            </if>
+            <if test="countryCode != null">
+                AND country_code = #{countryCode}
+            </if>
+        </where>
+    </delete>
+</mapper>
