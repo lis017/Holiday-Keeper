@@ -84,7 +84,6 @@ public class HolidayService {
     public void deleteByYearAndCountryCode(Integer year, String countryCode) {
         holidayRepository.deleteByYearAndCountryCode(year, countryCode);
     }
-
     @Transactional
     public void saveAll(List<Holiday> holidays) {
         holidayRepository.saveAll(holidays);

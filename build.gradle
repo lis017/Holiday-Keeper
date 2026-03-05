@@ -70,3 +70,12 @@ sourceSets {
 clean {
 	delete file(generated)
 }
+
+/*jvm로그남기기 gc와 oom시 파일로 오류체크 */
+bootRun {
+	jvmArgs = [
+		    "-Dfile.encoding=UTF-8",   
+			"-XX:+HeapDumpOnOutOfMemoryError",
+			"-XX:HeapDumpPath=./heapdump.hprof"
+	]
+}
