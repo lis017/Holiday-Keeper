@@ -7,6 +7,8 @@ import com.planitsquare.holidaykeeper.country.CountryRepository;
 import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class HolidaySyncService {
 
+    // Holiday 적재 관련 로그는 DEBUG 레벨로만 남겨서 기본 INFO 로그를 지저분하게 만들지 않음
+    private static final Logger log = LoggerFactory.getLogger(HolidaySyncService.class);
+
     private final NagerApiClient nagerApiClient;
     private final HolidayRepository holidayRepository;
     private final CountryRepository countryRepository;
@@ -36,9 +41,11 @@ public class HolidaySyncService {
     )
     public void reSync(Integer year, String countryCode) {
 
-        // 1. 외부 API 호출
+        // 1. 외부 API 호출 (Flux → List 변환, reSync는 단건 호출이므로 block 허용)
         List<PublicHolidayDto> latestHolidays =
-                nagerApiClient.getPublicHolidays(year, countryCode);
+                nagerApiClient.getPublicHolidays(year, countryCode)
+                        .collectList()
+                        .block();
 
         // 2. fetch join 조회 (Lazy 안전)
         List<Holiday> holidays =
@@ -47,7 +54,8 @@ public class HolidaySyncService {
         // 3. DB 변경 로직만 트랜잭션으로 위임
         saveAll(latestHolidays, holidays);
 
-        System.out.println("재동기화 완료: year=" + year + ", country=" + countryCode);
+        // 디버깅이 필요할 때만 볼 수 있도록 DEBUG 레벨로 적재 결과 로그 남김
+        log.debug("재동기화 완료: year={}, country={}", year, countryCode);
     }
 
     /**
@@ -90,5 +98,10 @@ public class HolidaySyncService {
 
             holidayRepository.save(entity);
         }
+
+        // 전체 Holiday 적재 정합성/성능 체크를 위한 최종 개수 로그 (INFO 레벨로 남김)
+        // - 병렬 스레드 수(1,4,8,16,...)를 바꿔가며, 최종 개수가 기대값과 맞는지 빠르게 눈으로 확인하는 용도
+        long totalCount = holidayRepository.count();
+        log.info("Holiday 테이블 현재 전체 적재 개수: {}", totalCount);
     }
 }
