@@ -6,9 +6,10 @@ import com.planitsquare.holidaykeeper.holiday.entity.Holiday;
 import com.planitsquare.holidaykeeper.holiday.mapper.HolidayMapper;
 import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +26,11 @@ public class HolidayService {
     private final HolidayRepository holidayRepository;  //JPA
     private final HolidayMapper holidayMapper;          //MyBatis
     private final HolidaySyncService holidaySyncService;
+
+    // self-invocation 문제 해결: 같은 클래스 내 @Cacheable 메서드를 프록시를 통해 호출하기 위해 self 주입
+    @Lazy
+    @Autowired
+    private HolidayService self;
 
     /**
      * 🔹 캐시 전용 메서드
@@ -57,8 +63,9 @@ public class HolidayService {
             String countryCode,
             Pageable pageable
     ) {
+        // self 프록시를 통해 호출해야 @Cacheable AOP가 정상 작동
         List<PublicHolidayDto> content =
-                searchForCache(year, countryCode, pageable);
+                self.searchForCache(year, countryCode, pageable);
 
         long totalElements =
                 holidayRepository.countByYearAndCountryCode_CountryCode(year, countryCode);
@@ -77,7 +84,7 @@ public class HolidayService {
      * 특정 연도·국가 공휴일 전체 삭제
      */
     @CacheEvict(
-            cacheNames = "holiday",
+            cacheNames = "holidaySearch",
             allEntries = true
     )
     @Transactional

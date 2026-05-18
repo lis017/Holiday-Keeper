@@ -9,10 +9,8 @@ import com.planitsquare.holidaykeeper.holiday.repository.HolidayRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -35,17 +33,11 @@ public class HolidaySyncService {
     private final CountryRepository countryRepository;
 
     @Async
-    @CacheEvict(
-            cacheNames = "holidaySearch",
-            allEntries = true
-    )
     public void reSync(Integer year, String countryCode) {
 
-        // 1. 외부 API 호출 (Flux → List 변환, reSync는 단건 호출이므로 block 허용)
+        // 1. 외부 API 호출 (NagerApiClient가 이미 block() 처리해 List 반환)
         List<PublicHolidayDto> latestHolidays =
-                nagerApiClient.getPublicHolidays(year, countryCode)
-                        .collectList()
-                        .block();
+                nagerApiClient.getPublicHolidays(year, countryCode);
 
         // 2. fetch join 조회 (Lazy 안전)
         List<Holiday> holidays =
